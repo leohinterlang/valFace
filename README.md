@@ -14,15 +14,27 @@ associated with the current date and as such, their definition must be clear.
 The basic date specification uses the ISO-8601 standard format.
 <dl>
   <dt><b>&lt;year&gt;-&lt;month&gt;-&lt;day&gt;</b></dt>
-  <dd>The specified date. ex: 2014-09-18</dd><br/>
+  <dd>The specified date. ex: 2014-09-18</dd>
+  <dt><b>&lt;yyyy&gt;&lt;mm&gt;&lt;dd&gt;</b></dt>
+  <dd>Without the dashes: 4 digit year, 2 digit month and day. ex: 20140918</dd>
 </dl>
+Other basic date specifications include the following:
 <dl>
-  <dt><b>today</b> or <b>now</b></dt>
-  <dd>The current date. ex: 2014-09-18</dd><br/>
+  <dt><b>today</b></dt>
+  <dd>The current date. ex: 2014-09-18</dd>
   <dt><b>tomorrow</b></dt>
-  <dd>The date after today. Same as: `today.plus.1.day`. ex: 2014-09-19</dd><br/>
+  <dd>The date after today. ex: 2014-09-19</dd>
   <dt><b>yesterday</b></dt>
-  <dd>The date before today. Same as: `today.minus.1.day`. ex: 2014-09-17</dd><br/>
+  <dd>The date before today. ex: 2014-09-17</dd>
+  <dt><b>[this.]week</b></dt>
+  <dd>The Monday of the current week. ex: 2014-09-15</dd>
+  <dt><b>last.week</b></dt>
+  <dd>The Monday of the previous week. ex: 2014-09-08</dd>
+  <dt><b>next.week</b></dt>
+  <dd>The Monday of the following week. ex: 2014-09-22</dd>
+  <dt><b>end.[this.]week</b></dt><dt><b>[this.]week.end
+  <dd>The Sunday of the current week. ex: 2014-09-21</dd>
+  
 </dl>
 
 A week is defined as follows:
@@ -30,22 +42,11 @@ A week is defined as follows:
 * There are 5 weekdays; Monday, Tuesday, Wednesday, Thursday and Friday.
 * There are 2 weekend days; Saturday and Sunday.
 * The beginning of the week is Monday.
-* The beginning of the weekend is Saturday.
+* The end of the week is Sunday.
 * Each week is bracketed from Monday through Sunday.
 * The term "this.week" refers to the enclosing week.
 * The term "last.week" refers to days enclosed in the previous week.
 * The term "next.week" refers to days enclosed in the following week.
-
-| September 2014 |
-| Mon | Tue | Wed | Thu | Fri | Sat | Sun |
-|-----|-----|-----|-----|-----|-----|-----|
-|  1  |  2  |  3  |  4  |  5  |  6  |  7  |
-|  8  |  9  | 10  | 11  | 12  | 13  | 14  |
-| 15  | 16  | 17  | 18  | 19  | 20  | 21  |
-| 22  | 23  | 24  | 25  | 26  | 27  | 28  |
-| 29  | 30  |     |     |     |     |     |
-|-----------------------------------------|
-
 
 * today or now - Today's date.
 
