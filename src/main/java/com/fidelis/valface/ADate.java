@@ -373,8 +373,8 @@ public class ADate implements Comparable<ADate> {
 	 * @return a new {@code ADate} instance with the modified date.
 	 * @throws IllegalArgumentException if the resulting date is not valid.
 	 */
-	public ADate plusYears (int years) throws IllegalArgumentException {
-		int yearValue = year + years;
+	public ADate plusYears (long years) throws IllegalArgumentException {
+		int yearValue = (int) (year + years);
 		return withYear(yearValue);
 	}
 	
@@ -389,8 +389,8 @@ public class ADate implements Comparable<ADate> {
 	 * @return a new {@code ADate} instance with the modified date.
 	 * @throws IllegalArgumentException if the resulting date is not valid.
 	 */
-	public ADate plusMonths (int months) throws IllegalArgumentException {
-		int monthValue = month + months;
+	public ADate plusMonths (long months) throws IllegalArgumentException {
+		int monthValue = (int) (month + months);
 		ADate date = new ADate();
 		if (1 <= monthValue && monthValue <= 12) {
 			date.year = year;
@@ -425,8 +425,8 @@ public class ADate implements Comparable<ADate> {
 	 * @return a new {@code ADate} instance with the date modified.
 	 * @throws IllegalArgumentException if the resulting date is not valid.
 	 */
-	public ADate plusDays (int days) throws IllegalArgumentException {
-		int dayValue = day + days;
+	public ADate plusDays (long days) throws IllegalArgumentException {
+		int dayValue = (int) (day + days);
 		ADate date = new ADate();
 		date.year = year;
 		date.month = month;
@@ -460,10 +460,32 @@ public class ADate implements Comparable<ADate> {
 		checkYear(date.year);
 		return date;
 	}
+	
+	public ADate minusYears (long years) {
+		if (years < 0) {
+			return plusYears(years);
+		}
+		return plusYears(-years);
+	}
+	
+	public ADate minusMonths (long months) {
+		if (months < 0) {
+			return plusMonths(months);
+		}
+		return plusMonths(-months);
+	}
+	
+	public ADate minusDays (long days) {
+		if (days < 0) {
+			return plusDays(days);
+		}
+		return plusDays(-days);
+	}
 
 	/**
 	 * Compares this date with another date to determine if they are equal.
-	 * The year, month and day components of this date are compared with those of the specified "other" date.
+	 * The year, month and day components of this date are compared with those
+	 * of the specified "other" date.
 	 * If they are the same, then {@code true} is returned.
 	 * 
 	 * @param other the date to be compared with this one.
@@ -475,10 +497,12 @@ public class ADate implements Comparable<ADate> {
 	
 	/**
 	 * Compares this date with another date.
-	 * This date is compared with the "other" date to determined if the "other" is less than, greater than, or equal to this one.
-	 * This relation is presented as a return value that is either less than, greater than, or equal to zero.
+	 * This date is compared with the "other" date to determined if the "other" is less than,
+	 * greater than, or equal to this one. This relation is presented as a return value that is
+	 * either less than, greater than, or equal to zero.
 	 * <p>
-	 * This method implements the {@link java.lang.Comparable Comparable} interface so that dates can be sorted.
+	 * This method implements the {@link java.lang.Comparable Comparable} interface so that
+	 * dates can be sorted.
 	 * 
 	 * @param other the date to compare with this one.
 	 * @return an integer that is either less than, greater than, or equal to zero.
@@ -685,7 +709,8 @@ public class ADate implements Comparable<ADate> {
 	
 	/**
 	 * Returns the name for the month.
-	 * The months are numbered from 1 to 12 and correspond with the names {@code January} through {@code December}.
+	 * The months are numbered from 1 to 12 and correspond with the names
+	 * {@code January} through {@code December}.
 	 * This form is also known as {@code FULL} in the enumeration {@code TextStyle} (Java 8).
 	 * 
 	 * @return the name for the month.
@@ -696,7 +721,8 @@ public class ADate implements Comparable<ADate> {
 	
 	/**
 	 * Returns an abbreviated, 3 character name for the month.
-	 * The months are numbered from 1 to 12 and correspond with the names {@code Jan} through {@code Dec}.
+	 * The months are numbered from 1 to 12 and correspond with the names {@code Jan} through
+	 * {@code Dec}.
 	 * This form is also known as {@code SHORT} in the enumeration {@code TextStyle} (Java 8).
 	 * 
 	 * @return the abbreviated 3 character name for the month.
@@ -707,7 +733,8 @@ public class ADate implements Comparable<ADate> {
 	
 	/**
 	 * Returns the name for the day of the week.
-	 * The days of the week are numbered from 1 to 7 and correspond with the names {@code Monday} through {@code Sunday}.
+	 * The days of the week are numbered from 1 to 7 and correspond with the names {@code Monday}
+	 * through {@code Sunday}.
 	 * This form is also known as {@code FULL} in the enumeration {@code TextStyle} (Java 8).
 	 * <p>
 	 * As it says in the Bible:<blockquote>
@@ -722,7 +749,8 @@ public class ADate implements Comparable<ADate> {
 	
 	/**
 	 * Returns an abbreviated, 3 character name for the day of the week.
-	 * The days of the week are numbered from 1 to 7 and correspond with the names {@code Mon} through {@code Sun}.
+	 * The days of the week are numbered from 1 to 7 and correspond with the names {@code Mon}
+	 * through {@code Sun}.
 	 * This form is also known as {@code SHORT} in the enumeration {@code TextStyle} (Java 8).
 	 * <p>
 	 * As it says in the Bible:<blockquote>
@@ -772,88 +800,130 @@ public class ADate implements Comparable<ADate> {
 	 * @return a formatted date String.
 	 */
 	public String format (String pattern) {
-		String[] forms = {
-				"Year", "year", "yr", "Month", "monthName", "month", "mon", "mo",
-				"days", "Day", "day", "da", "dowName", "dow"
-		};		// the order of these must not be changed.
+		
+		// Null pattern returns toString.
 		if (pattern == null) {
 			return toString();
 		}
-		StringBuilder sb = new StringBuilder(16);
+		
+		// Setup StringBuilder.
+		StringBuilder sb = new StringBuilder(40);
+		
+		// Pattern character loop.
 		boolean inText = false;
 		for (int n = 0; n < pattern.length(); n++) {
 			char c = pattern.charAt(n);
+			
+			// Already in angle bracket text.
 			if (inText) {
-				if (c == '>') {			// end text
+				
+				// End of text. Reset flag and continue.
+				if (c == '>') {
 					inText = false;
 					continue;
-				} else {
+				}
+				
+				// Not end of text. Append char and continue.
+				else {
 					sb.append(c);
 					continue;
 				}
 			}
+			
+			// Char is not a letter.
 			if (! Character.isLetter(c)) {
-				if (c == '<') {		// begin text
+				
+				// Start of angle bracket text.
+				if (c == '<') {
 					inText = true;
 					continue;
 				}
+				
+				// Append non-letter char.
 				sb.append(c);
-			} else {
-				String pat = pattern.substring(n);
-				boolean match = false;
-				for (int m = 0; m < forms.length; m++) {
-					if (pat.startsWith(forms[m])) {
-						match = true;
-						n += forms[m].length() - 1;
-						switch (m) {
-						case 0:		// Year
-									sb.append(String.format("%d", year));
-									break;
-						case 1:		// year
-									sb.append(String.format("%04d", year));
-									break;
-						case 2:		// yr
-									sb.append(String.format("%02d", year % 100));
-									break;
-						case 3:		// Month
-									sb.append(String.format("%d", month));
-									break;
-						case 4:		// monthName
-									sb.append(monthName());
-									break;
-						case 5:		// month
-						case 7:		// mo
-									sb.append(String.format("%02d", month));
-									break;
-						case 6:		// mon
-									sb.append(mon());
-									break;
-						case 8:		// days
-									sb.append(String.format("%d", getDays()));
-									break;
-						case 9:		// Day
-									sb.append(String.format("%d", day));
-									break;
-						case 10:	// day
-						case 11:	// da
-									sb.append(String.format("%02d", day));
-									break;
-						case 12:	// dowName
-									sb.append(dowName());
-									break;
-						case 13:	// dow
-									sb.append(dow());
-									break;
-						}
-						break;
-					}
+			}
+			
+			// Char is a letter.
+			else {
+				
+				// Isolate start of possible keyword.
+				String kw = pattern.substring(n);
+				int len = keywordSubstitute(kw, sb);
+				
+				// Keyword match. Adjust index.
+				if (len != 0) {
+					n += len - 1;
 				}
-				if (! match) {
+				
+				// Not a keyword match. Append the char.
+				else {
 					sb.append(c);
 				}
 			}
 		}
 		return sb.toString();
+	}
+	
+	int keywordSubstitute (String kw, StringBuilder sb) {
+		String[] keywords = {
+				"Year", "year", "yr", "Month", "monthName", "month", "mon", "mo",
+				"days", "Day", "day", "da", "dowName", "dow"
+		};		// the order of these must not be changed.
+		
+		int len = 0;
+		int m;
+		for (m = 0; m < keywords.length; m++) {
+			if (kw.startsWith(keywords[m])) {
+				len = keywords[m].length();
+				break;
+			}
+		}
+		
+		// Keyword match found.
+		if (len != 0) {
+
+			switch (m) {
+			case 0:		// Year
+				sb.append(String.format("%d", year));
+				break;
+			case 1:		// year
+				sb.append(String.format("%04d", year));
+				break;
+			case 2:		// yr
+				sb.append(String.format("%02d", year % 100));
+				break;
+			case 3:		// Month
+				sb.append(String.format("%d", month));
+				break;
+			case 4:		// monthName
+				sb.append(monthName());
+				break;
+			case 5:		// month
+			case 7:		// mo
+				sb.append(String.format("%02d", month));
+				break;
+			case 6:		// mon
+				sb.append(mon());
+				break;
+			case 8:		// days
+				sb.append(String.format("%d", getDays()));
+				break;
+			case 9:		// Day
+				sb.append(String.format("%d", day));
+				break;
+			case 10:	// day
+			case 11:	// da
+				sb.append(String.format("%02d", day));
+				break;
+			case 12:	// dowName
+				sb.append(dowName());
+				break;
+			case 13:	// dow
+				sb.append(dow());
+				break;
+			}
+		}
+		return len;
 	}
 	
 	/**
