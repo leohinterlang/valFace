@@ -31,7 +31,7 @@ public class TokenStringTest {
 	 public void before () {
 		 String test = testName.getMethodName();
 		 System.out.printf("Testing: " + test);
-		 for (int n = test.length(); n < 25; n++) {
+		 for (int n = test.length(); n < 30; n++) {
 			 System.out.print('.');
 		 }
 		 passed = false;

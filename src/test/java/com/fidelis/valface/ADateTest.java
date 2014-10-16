@@ -37,7 +37,7 @@ public class ADateTest {
 	public void setUp () throws Exception {
 		String test = testName.getMethodName();
 		System.out.printf("Testing: " + test);
-		for (int n = test.length(); n < 25; n++) {
+		for (int n = test.length(); n < 30; n++) {
 			System.out.print('.');
 		}
 		passed = false;
