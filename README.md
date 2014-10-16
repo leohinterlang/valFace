@@ -1,8 +1,25 @@
 ValFace
 =======
 
-ValFace is a validation interface that checks input formatting and acceptable values
-based on a text specification.
+ValFace is a validation interface that checks input formatting and value constraints
+based on a text specification. Generated as the next logical step following the parsing
+of command line arguments (see: [ArgFace](https://github.com/leohinterlang/argFace.git)), validation is an essential part of many applications. This project attempts to address
+this issue using a standard text specification.
+
+Example:
+
+    private final String usageText = "guess <president> <year-elected>";
+
+    private final String[] valText = {
+        "Values:",
+            "<president> String = Lincoln | Washington | Jefferson ;",
+            "<year-elected> Date = 1789 .. this.year;"
+     };
+
+    ValFace valFace = ValPrototype.create(valText, this);
+    if (valFace == null) {
+        return false;
+    }
 
 ### Dates
 

@@ -301,7 +301,72 @@ public class ATime implements Comparable<ATime> {
 	 * @return a formatted string
 	 */
 	public String format (String pattern) {
-		String[] forms = {
+		
+		// Null pattern returns toString.
+		if (pattern == null) {
+			return toString();
+		}
+		
+		// Setup StringBuilder.
+		StringBuilder sb = new StringBuilder(40);
+		
+		// Pattern character loop.
+		boolean inText = false;
+		for (int n = 0; n < pattern.length(); n++) {
+			char c = pattern.charAt(n);
+			
+			// Already in angle bracket text.
+			if (inText) {
+				
+				// End of text. Reset flag and continue.
+				if (c == '>') {
+					inText = false;
+					continue;
+				}
+				
+				// Not end of text. Append char and continue.
+				else {
+					sb.append(c);
+					continue;
+				}
+			}
+			
+			// Char is not a letter.
+			if (! Character.isLetter(c)) {
+				
+				// Start of angle bracket text.
+				if (c == '<') {
+					inText = true;
+					continue;
+				}
+				
+				// Append non-letter char.
+				sb.append(c);
+			}
+			
+			// Char is a letter.
+			else {
+				
+				// Isolate start of possible keyword.
+				String kw = pattern.substring(n);
+				int len = keywordSubstitute(kw, sb);
+				
+				// Keyword match. Adjust index.
+				if (len != 0) {
+					n += len - 1;
+				}
+				
+				// Not a keyword match. Append the char.
+				else {
+					sb.append(c);
+				}
+			}
+		}
+		return sb.toString();
+	}
+	
+	int keywordSubstitute (String kw, StringBuilder sb) {
+		String[] keywords = {
 				"Hour", "hour", "HH", "hh",
 				"Minute", "minute", "mm",
 				"Second", "second", "ss",
@@ -310,99 +375,75 @@ public class ATime implements Comparable<ATime> {
 				"nn1", "nn2", "nn3"
 		};		// the order of these must not be changed.
 		
-		if (pattern == null) {
-			return toString();
-		}
-		StringBuilder sb = new StringBuilder(16);
-		boolean inText = false;
-		for (int n = 0; n < pattern.length(); n++) {
-			char c = pattern.charAt(n);
-			if (inText) {
-				if (c == '>') {			// end text
-					inText = false;
-					continue;
-				} else {
-					sb.append(c);
-					continue;
-				}
-			}
-			if (! Character.isLetter(c)) {
-				if (c == '<') {		// begin text
-					inText = true;
-					continue;
-				}
-				sb.append(c);
-			} else {
-				String pat = pattern.substring(n);
-				boolean match = false;
-				for (int m = 0; m < forms.length; m++) {
-					if (pat.startsWith(forms[m])) {
-						match = true;
-						n += forms[m].length() - 1;
-						switch (m) {
-						case 0:		// Hour
-							sb.append(String.format("%d", hour));
-							break;
-						case 1:		// hour
-							sb.append(String.format("%d", hour % 12));
-							break;
-						case 2:		// HH
-							sb.append(String.format("%02d", hour));
-							break;
-						case 3:		// hh
-							sb.append(String.format("%02d", hour % 12));
-							break;
-						case 4:		// Minute
-							sb.append(String.format("%d", minute));
-							break;
-						case 5:		// minute
-						case 6:		// mm
-							sb.append(String.format("%02d", minute));
-							break;
-						case 7:		// Second
-							sb.append(String.format("%d", second));
-							break;
-						case 8:		// second
-						case 9:		// ss
-							sb.append(String.format("%02d", second));
-							break;
-						case 10:	// Nano
-							sb.append(String.format("%d", nano));
-							break;
-						case 11:	// nano
-							sb.append(String.format("%09d", nano));
-							break;
-						case 12:	// milli
-							sb.append(String.format("%03d", nano / NANOS_MILLI));
-							break;
-						case 13:	// micro
-							sb.append(String.format("%06d", nano / NANOS_MICRO));
-							break;
-						case 14:	// AMPM
-							sb.append(hour < 12 ? "AM" : "PM");
-							break;
-						case 15:	// ampm
-							sb.append(hour < 12 ? "am" : "pm");
-							break;
-						case 16:	// nn1
-							sb.append(String.format("%09d", nano).substring(0, 3));
-							break;
-						case 17:	// nn2
-							sb.append(String.format("%09d", nano).substring(3, 6));
-							break;
-						case 18:	// nn3
-							sb.append(String.format("%09d", nano).substring(6, 9));
-							break;
-						}
-						break;
-					}
-				}
-				if (! match) {
-					sb.append(c);
-				}
+		int len = 0;
+		int m;
+		for (m = 0; m < keywords.length; m++) {
+			if (kw.startsWith(keywords[m])) {
+				len = keywords[m].length();
+				break;
 			}
 		}
-		return sb.toString();
+		
+		// Keyword match found.
+		if (len != 0) {
+			
+			switch (m) {
+			case 0:		// Hour
+				sb.append(String.format("%d", hour));
+				break;
+			case 1:		// hour
+				sb.append(String.format("%d", hour % 12));
+				break;
+			case 2:		// HH
+				sb.append(String.format("%02d", hour));
+				break;
+			case 3:		// hh
+				sb.append(String.format("%02d", hour % 12));
+				break;
+			case 4:		// Minute
+				sb.append(String.format("%d", minute));
+				break;
+			case 5:		// minute
+			case 6:		// mm
+				sb.append(String.format("%02d", minute));
+				break;
+			case 7:		// Second
+				sb.append(String.format("%d", second));
+				break;
+			case 8:		// second
+			case 9:		// ss
+				sb.append(String.format("%02d", second));
+				break;
+			case 10:	// Nano
+				sb.append(String.format("%d", nano));
+				break;
+			case 11:	// nano
+				sb.append(String.format("%09d", nano));
+				break;
+			case 12:	// milli
+				sb.append(String.format("%03d", nano / NANOS_MILLI));
+				break;
+			case 13:	// micro
+				sb.append(String.format("%06d", nano / NANOS_MICRO));
+				break;
+			case 14:	// AMPM
+				sb.append(hour < 12 ? "AM" : "PM");
+				break;
+			case 15:	// ampm
+				sb.append(hour < 12 ? "am" : "pm");
+				break;
+			case 16:	// nn1
+				sb.append(String.format("%09d", nano).substring(0, 3));
+				break;
+			case 17:	// nn2
+				sb.append(String.format("%09d", nano).substring(3, 6));
+				break;
+			case 18:	// nn3
+				sb.append(String.format("%09d", nano).substring(6, 9));
+				break;
+			}
+		}
+		return len;
 	}
 	
 	/**
@@ -612,40 +653,40 @@ public class ATime implements Comparable<ATime> {
 	 * Returns a value less than, greater than, or equal to zero as this
 	 * ATime is less than, greater than, or equal to the other ATime.
 	 * 
-	 * @param that the other ATime to compare to
+	 * @param other the other ATime to compare to
 	 * @return a value less than, greater than, or equal to zero
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo (ATime that) {
+	public int compareTo (ATime other) {
 		int cmp = 0;
-		if (this.hour < that.hour) {
+		if (this.hour < other.hour) {
 			--cmp;
-		} else if (this.hour > that.hour) {
+		} else if (this.hour > other.hour) {
 			++cmp;
 		}
 		if (cmp != 0) {
 			return cmp;
 		}
-		if (this.minute < that.minute) {
+		if (this.minute < other.minute) {
 			--cmp;
-		} else if (this.minute > that.minute) {
+		} else if (this.minute > other.minute) {
 			++cmp;
 		}
 		if (cmp != 0) {
 			return cmp;
 		}
-		if (this.second < that.second) {
+		if (this.second < other.second) {
 			--cmp;
-		} else if (this.second > that.second) {
+		} else if (this.second > other.second) {
 			++cmp;
 		}
 		if (cmp != 0) {
 			return cmp;
 		}
-		if (this.nano < that.nano) {
+		if (this.nano < other.nano) {
 			--cmp;
-		} else if (this.nano > that.nano) {
+		} else if (this.nano > other.nano) {
 			++cmp;
 		}
 		return cmp;

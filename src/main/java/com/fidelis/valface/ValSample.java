@@ -64,7 +64,7 @@ public class ValSample {
 	 */
 	public static void main (String... args) {
 		// Debug.setTrace(true);
-		Debug.setVerbose(true);
+		// Debug.setVerbose(true);
 		ValSample prog = new ValSample();
 		if (! prog.processArguments(args)) {
 			System.exit(1);

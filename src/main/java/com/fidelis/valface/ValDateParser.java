@@ -19,8 +19,8 @@ import com.fidelis.argface.Debug;
  * <dt>&lt;basic-date&gt;:</dt>
  * <dd>A basic-date is the starting point for expressing a date.
  * The modifiers allow variations to what has already been specified.
- * The hypen or dash "-" used between numeric fields of a date may also be
- * specified with the dot or period "." character.
+ * The dash "-" used between numeric fields of a date may also be
+ * specified with the dot "." character.
  * But it is invalid to switch between one and the other.
  * Don't use "2010-10.10 or "1892.12-25" forms; those won't work.</dd>
  * </dl>

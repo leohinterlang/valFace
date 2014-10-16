@@ -383,7 +383,8 @@ public class ADate implements Comparable<ADate> {
 	 * The addition will affect both the month and year components to maintain a valid date.
 	 * If the resulting date is invalid, an exception is thrown.
 	 * This will only occur if the year falls outside the range 0 to 9999.
-	 * As with the {@link #withMonth(int) withMonth} method, the day component may be adjusted due to a change in the month.
+	 * As with the {@link #withMonth(int) withMonth} method, the day component may be adjusted
+	 * due to a change in the month.
 	 * 
 	 * @param months the number of months to be added. Negative values can be used to achieve subtraction.
 	 * @return a new {@code ADate} instance with the modified date.
